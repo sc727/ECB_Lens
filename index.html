@@ -441,7 +441,27 @@
   </div>
 
 
+<script src="ecb-data.js"></script>
 <script src="script.js"></script>
+<script>
+// Debug script to check data loading
+setTimeout(() => {
+  console.log('Debug: Checking data after 2 seconds...');
+  console.log('ECBDataFetcher available:', typeof ECBDataFetcher !== "undefined");
+  console.log('window.ecbData available:', typeof window.ecbData !== "undefined");
+  if (window.ecbData) {
+    console.log('Data keys:', Object.keys(window.ecbData));
+    console.log('Refi data available:', window.ecbData.refi ? 'Yes' : 'No');
+  }
+  
+  // Check rate boxes
+  const rateBoxes = document.querySelectorAll('.rate-box .rate-value');
+  console.log('Rate boxes found:', rateBoxes.length);
+  rateBoxes.forEach((box, i) => {
+    console.log('Rate box', i, 'content:', box.textContent);
+  });
+}, 2000);
+</script>
 </body>
 </html>
 

@@ -89,7 +89,7 @@ function showModalAllYearsChart(type) {
   // Build all-years data
   let labels = [];
   let values = [];
-  let series = ecbData[type].data;
+  let series = window.ecbData[type].data;
   for (let y of series) {
     for (let i = 0; i < y.values.length; i++) {
       labels.push(`${y.labels[i]} ${y.year}`);
@@ -166,7 +166,7 @@ function showYearChart(type, year) {
   const ctx = canvas.getContext("2d");
   if (charts[type]) charts[type].destroy();
 
-  let series = ecbData[type].data;
+  let series = window.ecbData[type].data;
   let years = series.map((y) => y.year);
   let idx = years.indexOf(parseInt(year));
   if (idx < 0) idx = years.length - 1; // default to latest year
@@ -231,7 +231,7 @@ function openModal(type) {
     showModalAllYearsChart(type);
   } else {
     // Rates page: show latest year (default)
-    let series = ecbData[type].data;
+    let series = window.ecbData[type].data;
     let lastYear = series[series.length - 1].year;
     showYearChart(type, lastYear);
   }
@@ -243,7 +243,7 @@ function closeModal(type) {
 // Rates page: Year navigation
 function changeYear(type, dir) {
   let current = parseInt(document.getElementById(`year-${type}`).textContent);
-  let series = ecbData[type].data;
+  let series = window.ecbData[type].data;
   let years = series.map((y) => y.year);
   let idx = years.indexOf(current);
   if (dir === "prev" && idx < years.length - 1) idx++;
@@ -253,6 +253,8 @@ function changeYear(type, dir) {
 
 // ---- UPDATE RATE TRENDS ----
 function updateCurrentRatesDisplay(data) {
+  console.log('updateCurrentRatesDisplay called with data:', data);
+  
   // For home page
   document.querySelectorAll('.rate-box').forEach((box) => {
     const title = box.querySelector('h3').textContent;
@@ -261,15 +263,29 @@ function updateCurrentRatesDisplay(data) {
     if (title.includes("Deposit Facility")) type = "deposit";
     if (title.includes("Marginal Lending")) type = "lending";
     if (!type) return;
-    // Update
-    box.querySelector('.rate-value').textContent = getLatestRate(type, data) + "%";
-    let trend = getRateTrend(type, data);
-    let trendDiv = box.querySelector('.rate-trend');
-    trendDiv.textContent = trend;
-    trendDiv.classList.remove('up', 'down', 'neutral');
-    if (trend.includes('Increasing')) trendDiv.classList.add('up');
-    else if (trend.includes('Decreasing')) trendDiv.classList.add('down');
-    else trendDiv.classList.add('neutral');
+    
+    console.log('Processing rate box for type:', type);
+    
+    try {
+      // Update
+      const latestRate = getLatestRate(type, data);
+      console.log('Latest rate for', type, ':', latestRate);
+      box.querySelector('.rate-value').textContent = latestRate + "%";
+      
+      let trend = getRateTrend(type, data);
+      let trendDiv = box.querySelector('.rate-trend');
+      trendDiv.textContent = trend;
+      trendDiv.classList.remove('up', 'down', 'neutral');
+      if (trend.includes('Increasing')) trendDiv.classList.add('up');
+      else if (trend.includes('Decreasing')) trendDiv.classList.add('down');
+      else trendDiv.classList.add('neutral');
+      
+      console.log('Successfully updated', type, 'rate box');
+    } catch (error) {
+      console.error('Error updating rate box for', type, ':', error);
+      box.querySelector('.rate-value').textContent = "Error";
+      box.querySelector('.rate-trend').textContent = "Failed to load";
+    }
   });
   // For rates page
   document.querySelectorAll('.rate-card').forEach((card) => {
@@ -293,17 +309,28 @@ function updateCurrentRatesDisplay(data) {
 
 // ---- MAIN ----
 document.addEventListener('DOMContentLoaded', async function() {
-  // ECBDataFetcher is defined in ecb-data.js, and fallback data is in ecbData
-  // Use fallback data by default
-  let data = ecbData;
-  // If the fetcher exists, try to get real data (optional, fallback will always work)
+  // ECBDataFetcher is defined in ecb-data.js
+  let data = null;
+  
+  // Try to get data from ECBDataFetcher (with fallback data)
   if (typeof ECBDataFetcher !== "undefined") {
     try {
       ecbDataFetcher = new ECBDataFetcher();
       data = await ecbDataFetcher.fetchAllRates();
     } catch (e) {
-      data = ecbData;
+      console.error('Error fetching ECB data:', e);
+      // Use fallback data from ECBDataFetcher
+      ecbDataFetcher = new ECBDataFetcher();
+      data = ecbDataFetcher.getFallbackData();
     }
+  } else {
+    console.error('ECBDataFetcher not found');
+    // Create a basic fallback if ECBDataFetcher is not available
+    data = {
+      refi: { data: [{ year: 2024, values: [4.25, 4.25, 4.25, 4.25, 4.25, 4.25, 4.25, 4.25, 4.25, 4.25, 4.25, 4.25], labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] }] },
+      deposit: { data: [{ year: 2024, values: [3.75, 3.75, 3.75, 3.75, 3.75, 3.75, 3.75, 3.75, 3.75, 3.75, 3.75, 3.75], labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] }] },
+      lending: { data: [{ year: 2024, values: [4.75, 4.75, 4.75, 4.75, 4.75, 4.75, 4.75, 4.75, 4.75, 4.75, 4.75, 4.75], labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'] }] }
+    };
   }
 
   // Save to global
