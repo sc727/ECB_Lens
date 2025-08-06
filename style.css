@@ -1,0 +1,128 @@
+/* style.css — ECB Lens (Bocconi-style theme) */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: #ffffff;
+  color: #1c1c1c;
+  margin: 0;
+  padding: 0;
+}
+
+header.site-header {
+  background-color: #002147;
+  color: white;
+  padding: 1rem 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.site-title {
+  font-size: 1.8rem;
+  font-weight: 700;
+  margin: 0;
+}
+
+.site-subtitle {
+  font-size: 1rem;
+  margin: 0.2rem 0 0;
+  color: #bfc9d4;
+}
+
+nav a {
+  color: #fff;
+  margin-left: 1.5rem;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 0.95rem;
+}
+
+nav a:hover {
+  color: #66a6ff;
+}
+
+main {
+  padding: 2rem;
+}
+
+.rates-section {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 1.5rem;
+  margin-bottom: 3rem;
+}
+
+.rate-box {
+  background: #f4f7fa;
+  border: 1px solid #ccc;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.2s;
+}
+
+.rate-box:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.rate-value {
+  font-size: 1.6rem;
+  font-weight: 600;
+  color: #002147;
+}
+
+.card-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 2rem;
+}
+
+.card-box {
+  background: #f4f7fa;
+  padding: 1.5rem;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+  text-align: left;
+}
+
+.card-box h3 {
+  margin-top: 1rem;
+  font-size: 1.2rem;
+  color: #002147;
+}
+
+.card-box p {
+  font-size: 0.95rem;
+  line-height: 1.5;
+  color: #333;
+}
+
+.who-we-are {
+  margin-top: 4rem;
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+footer.site-footer {
+  background-color: #002147;
+  color: #fff;
+  text-align: center;
+  padding: 2rem;
+  margin-top: 4rem;
+}
+
+.modal-chart-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 400px;
+  margin-bottom: 2rem;
+}
+
+
+
